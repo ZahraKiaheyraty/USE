@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">USE</string>
+    <string name="msgg">{\"temperature\":USERNAME}</string>
+
+</resources>
