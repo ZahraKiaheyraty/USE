@@ -35,7 +35,6 @@ public class MainActivity extends AppCompatActivity {
     static String MQTTHOST = "tcp://45.149.79.49:1883";
     static String USERNAME = "CWh8AHEEvNFVpGM24bEN";
     static String PASSWORD = "admin@hamta";
-    String topicStr = "v1/devices/me/telemetry";
     MqttAndroidClient client;
 
     TextView subText;
@@ -50,7 +49,23 @@ public class MainActivity extends AppCompatActivity {
     Button btn;
     Handler updateHandler;
     String SDirection[] = {"Wind direction: North", "Wind direction: West"};
-    String msg =  "{\"temperature\":admin@hamta}";
+
+
+    String topicStr = "v1/devices/me/telemetry";
+    String msg =  "{\"Temp\":msg1}";
+
+    String topicStr2 = "v1/devices/me/telemetry";
+    String msg2 =  "{\"Up time\":msg2}";
+
+    String topicStr3 = "v1/devices/me/telemetry";
+    String msg3 =  "{\"CPU Temp\":msg3}";
+
+    String topicStr4 = "v1/devices/me/telemetry";
+    String msg4 =  "{\"Wind Direction\":msg4}";
+
+    String topicStr5 = "v1/devices/me/telemetry";
+    String msg5 =  "{\"Wind Speed\":msg5}";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -163,9 +178,7 @@ public class MainActivity extends AppCompatActivity {
     public void pub(View v) {
         String topic = topicStr;
         String message = msg;
-
         try {
-
 //            JSONObject jsonObject = new JSONObject(
 //                    String.format( "{\"temperature\":%s}", USERNAME) );
 //            String temp = jsonObject.getString("temperature");
@@ -174,6 +187,39 @@ public class MainActivity extends AppCompatActivity {
         } catch (MqttException e) {
             e.printStackTrace();
         }
+
+        String topic2 = topicStr2;
+        String message2 = msg2;
+        try {
+            client.publish(topic2, message2.getBytes(), 1, false);
+        } catch (MqttException e) {
+            e.printStackTrace();
+        }
+
+        String topic3 = topicStr3;
+        String message3 = msg3;
+        try {
+            client.publish(topic3, message3.getBytes(), 1, false);
+        } catch (MqttException e) {
+            e.printStackTrace();
+        }
+
+        String topic4 = topicStr4;
+        String message4 = msg4;
+        try {
+            client.publish(topic4, message4.getBytes(), 1, false);
+        } catch (MqttException e) {
+            e.printStackTrace();
+        }
+
+        String topic5 = topicStr5;
+        String message5 = msg5;
+        try {
+            client.publish(topic5, message5.getBytes(), 1, false);
+        } catch (MqttException e) {
+            e.printStackTrace();
+        }
+
     }
 
     private BroadcastReceiver broadcastreceiver = new BroadcastReceiver() {
