@@ -6,6 +6,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.res.Resources;
 import android.os.BatteryManager;
 import android.os.Bundle;
 import android.os.Handler;
@@ -52,7 +53,8 @@ public class MainActivity extends AppCompatActivity {
 
 
     String topicStr = "v1/devices/me/telemetry";
-    String msg =  "{\"Temp\":msg1}";
+    String msg =  "{"+"Temp" +":" + "msg1"+ "}";
+
 
     String topicStr2 = "v1/devices/me/telemetry";
     String msg2 =  "{\"Up time\":msg2}";
@@ -175,15 +177,23 @@ public class MainActivity extends AppCompatActivity {
         tx.start();
     }
 
-    public void pub(View v) {
+    public void pub(View v) throws InterruptedException {
+        Thread.sleep(1000);
+
+        int temp = (int) (Math.random() * 20 + 10);
+
         String topic = topicStr;
-        String message = msg;
+        String message = "{"+"Temp" +":" + temp + "º"+ "}" ;
         try {
+
+
 //            JSONObject jsonObject = new JSONObject(
 //                    String.format( "{\"temperature\":%s}", USERNAME) );
 //            String temp = jsonObject.getString("temperature");
-
+            //client.publish("s/us", new MqttMessage(("211," + temp).getBytes()));
             client.publish(topic, message.getBytes(), 1, false);
+
+
         } catch (MqttException e) {
             e.printStackTrace();
         }
