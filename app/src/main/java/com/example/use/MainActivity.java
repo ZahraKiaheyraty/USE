@@ -50,11 +50,7 @@ public class MainActivity extends AppCompatActivity {
     Button btn;
     Handler updateHandler;
     String SDirection[] = {"Wind direction: North", "Wind direction: West"};
-
-
     String msg =  "{\"temperature\":admin@hamta}";
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,7 +92,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void deliveryComplete(IMqttDeliveryToken token) {}
         });
-
 
         TextView textViewTemp = (TextView) findViewById(R.id.text_temperature);
         TextView textViewWind = (TextView) findViewById(R.id.text_wind_spe);
@@ -163,36 +158,6 @@ public class MainActivity extends AppCompatActivity {
             }
         };
         tx.start();
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     }
 
     public void pub(View v) {
@@ -201,23 +166,15 @@ public class MainActivity extends AppCompatActivity {
 
         try {
 
-            JSONObject jsonObject = new JSONObject(
-                    String.format( "{\"temperature\":%s}", USERNAME) );
-            String temp = jsonObject.getString("temperature");
+//            JSONObject jsonObject = new JSONObject(
+//                    String.format( "{\"temperature\":%s}", USERNAME) );
+//            String temp = jsonObject.getString("temperature");
 
             client.publish(topic, message.getBytes(), 1, false);
-        } catch (MqttException | JSONException e) {
+        } catch (MqttException e) {
             e.printStackTrace();
         }
     }
-
-
-
-
-
-
-
-
 
     private BroadcastReceiver broadcastreceiver = new BroadcastReceiver() {
         @Override
@@ -228,7 +185,6 @@ public class MainActivity extends AppCompatActivity {
     };
 
     private void updateUptimes() {
-        // Get the whole uptime
         long uptimeMillis = SystemClock.elapsedRealtime();
         String wholeUptime = String.format(Locale.getDefault(),
                 "%02d:%02d:%02d",
@@ -241,16 +197,12 @@ public class MainActivity extends AppCompatActivity {
                         .toMinutes(uptimeMillis)));
         wholeView.setText(wholeUptime);
 
-        // Get the uptime without deep sleep
         long elapsedMillis = SystemClock.uptimeMillis();
-        // Call updateUptimes after one second
         updateHandler.postDelayed(new Runnable() {
-
             @Override
             public void run() {
                 updateUptimes();
             }
         }, 1000);
     }
-
 }

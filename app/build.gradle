@@ -42,8 +42,12 @@ dependencies {
     // Eclipse MQTT libraries
     implementation 'org.eclipse.paho:org.eclipse.paho.android.service:1.1.1'
     implementation 'org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.2'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
 
     // Lottie dependency
     implementation "com.airbnb.android:lottie:4.2.0"
+
+    // Retrofit dependency
+    implementation 'com.squareup.retrofit2:retrofit:2.9.0'
+    implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
 }
