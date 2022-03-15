@@ -1,20 +1,20 @@
 package com.example.use;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
+
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.res.Resources;
 import android.os.BatteryManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
-import android.view.View;
-import android.widget.Button;
+import android.widget.CompoundButton;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import org.eclipse.paho.android.service.MqttAndroidClient;
 import org.eclipse.paho.client.mqttv3.IMqttActionListener;
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
@@ -24,8 +24,7 @@ import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
-import org.json.JSONException;
-import org.json.JSONObject;
+
 import java.text.DecimalFormat;
 import java.util.Locale;
 import java.util.Random;
@@ -38,6 +37,8 @@ public class MainActivity extends AppCompatActivity {
     static String PASSWORD = "admin@hamta";
     MqttAndroidClient client;
 
+    boolean isActiveService = false;
+
     TextView subText;
     MqttConnectOptions options;
     TextView tempTextView;
@@ -47,26 +48,27 @@ public class MainActivity extends AppCompatActivity {
     IntentFilter intentfilter;
     float batteryTemp;
     Random Number;
-    Button btn;
+    Switch startAllServices;
     Handler updateHandler;
+    String wholeUptime;
+    int Rnumber;
     String SDirection[] = {"Wind direction: North", "Wind direction: West"};
 
 
     String topicStr = "v1/devices/me/telemetry";
-    String msg =  "{"+"Temp" +":" + "msg1"+ "}";
+    String msg = "{" + "Temp" + ":" + "msg1" + "}";
 
 
     String topicStr2 = "v1/devices/me/telemetry";
-    String msg2 =  "{\"Up time\":msg2}";
+    String msg2 = "{\"Up time\":msg2}";
 
     String topicStr3 = "v1/devices/me/telemetry";
-    String msg3 =  "{\"CPU Temp\":msg3}";
+    String msg3 = "{\"CPU Temp\":msg3}";
 
     String topicStr4 = "v1/devices/me/telemetry";
-    String msg4 =  "{\"Wind Direction\":msg4}";
+    String msg4 = "{\"Wind Direction\":msg4}";
 
     String topicStr5 = "v1/devices/me/telemetry";
-    String msg5 =  "{\"Wind Speed\":msg5}";
 
 
     @Override
@@ -99,7 +101,8 @@ public class MainActivity extends AppCompatActivity {
 
         client.setCallback(new MqttCallback() {
             @Override
-            public void connectionLost(Throwable cause) {}
+            public void connectionLost(Throwable cause) {
+            }
 
             @Override
             public void messageArrived(String topic, MqttMessage message) throws Exception {
@@ -107,7 +110,8 @@ public class MainActivity extends AppCompatActivity {
             }
 
             @Override
-            public void deliveryComplete(IMqttDeliveryToken token) {}
+            public void deliveryComplete(IMqttDeliveryToken token) {
+            }
         });
 
         TextView textViewTemp = (TextView) findViewById(R.id.text_temperature);
@@ -116,13 +120,13 @@ public class MainActivity extends AppCompatActivity {
 
         wholeView = findViewById(R.id.text_up_time);
         updateHandler = new Handler();
-        updateUptimes();
+//        updateUptimes();
 
-        tempTextView = (TextView)findViewById(R.id.text_cpu_temperature);
+        tempTextView = (TextView) findViewById(R.id.text_cpu_temperature);
         intentfilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
-        MainActivity.this.registerReceiver(broadcastreceiver,intentfilter);
+        MainActivity.this.registerReceiver(broadcastreceiver, intentfilter);
 
-        btn = (Button) findViewById(R.id.simpleSwitch);
+        startAllServices = (Switch) findViewById(R.id.simpleSwitch);
         Speed = (TextView) findViewById(R.id.text_wind_spe);
         temperature = (TextView) findViewById(R.id.text_temperature);
 
@@ -135,13 +139,25 @@ public class MainActivity extends AppCompatActivity {
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
+
+
                                 Number = new Random();
-                                int Rnumber = ThreadLocalRandom.current().nextInt(10, 22);
-                                textViewTemp.setText(String.valueOf(Rnumber +" "+ (char) 0x00B0 +"C"));
+                                Rnumber = ThreadLocalRandom.current().nextInt(10, 22);
+                                textViewTemp.setText(String.valueOf(Rnumber + " " + (char) 0x00B0 + "C"));
 
                                 double Dwind = ThreadLocalRandom.current().nextDouble(2, 3);
                                 textViewWind.setText(String.valueOf(Dwind));
                                 textViewWind.setText(new DecimalFormat("##.##").format(Dwind));
+
+
+                                Random RDirection = new Random();
+                                int index = RDirection.nextInt(SDirection.length - 0) + 0;
+                                textViewWindDirection.setText(SDirection[index]);
+
+                                if (isActiveService) {
+                                    updateUptimes();
+                                    updateServices();
+                                }
                             }
                         });
 
@@ -153,37 +169,23 @@ public class MainActivity extends AppCompatActivity {
         };
         tn.start();
 
-        Thread tx = new Thread() {
 
+        startAllServices.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
-            public void run() {
-                while (!isInterrupted()) {
-                    try {
-                        Thread.sleep(500000);  //1000ms = 1 sec
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                Random RDirection = new Random();
-                                int index = RDirection.nextInt(SDirection.length - 0) + 0;
-                                textViewWindDirection.setText(SDirection[index]);
-                            }
-                        });
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                isActiveService = b;
             }
-        };
-        tx.start();
+        });
+
+
     }
 
-    public void pub(View v) throws InterruptedException {
-        Thread.sleep(1000);
 
+    public void updateServices() {
         int temp = (int) (Math.random() * 20 + 10);
 
         String topic = topicStr;
-        String message = "{"+"Temp" +":" + temp + "º"+ "}" ;
+        String message = "{" + "Temp" + ":" + temp + "º" + "}";
         try {
 
 
@@ -199,9 +201,9 @@ public class MainActivity extends AppCompatActivity {
         }
 
         String topic2 = topicStr2;
-        String message2 = msg2;
+        String msg = "{" + "Temp" + ":" + Rnumber + "º" + "}";
         try {
-            client.publish(topic2, message2.getBytes(), 1, false);
+            client.publish(topic2, msg.getBytes(), 1, false);
         } catch (MqttException e) {
             e.printStackTrace();
         }
@@ -223,26 +225,27 @@ public class MainActivity extends AppCompatActivity {
         }
 
         String topic5 = topicStr5;
-        String message5 = msg5;
+        String message5 = "{\"Wind Speed\":\"" + wholeUptime + "\"}";
+
         try {
             client.publish(topic5, message5.getBytes(), 1, false);
         } catch (MqttException e) {
             e.printStackTrace();
         }
-
     }
+
 
     private BroadcastReceiver broadcastreceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            batteryTemp = (float)(intent.getIntExtra(BatteryManager.EXTRA_TEMPERATURE,0))/10;
-            tempTextView.setText(batteryTemp +" "+ (char) 0x00B0 +"C");
+            batteryTemp = (float) (intent.getIntExtra(BatteryManager.EXTRA_TEMPERATURE, 0)) / 10;
+            tempTextView.setText(batteryTemp + " " + (char) 0x00B0 + "C");
         }
     };
 
     private void updateUptimes() {
         long uptimeMillis = SystemClock.elapsedRealtime();
-        String wholeUptime = String.format(Locale.getDefault(),
+        wholeUptime = String.format(Locale.getDefault(),
                 "%02d:%02d:%02d",
                 TimeUnit.MILLISECONDS.toHours(uptimeMillis),
                 TimeUnit.MILLISECONDS.toMinutes(uptimeMillis)
@@ -253,12 +256,12 @@ public class MainActivity extends AppCompatActivity {
                         .toMinutes(uptimeMillis)));
         wholeView.setText(wholeUptime);
 
-        long elapsedMillis = SystemClock.uptimeMillis();
-        updateHandler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                updateUptimes();
-            }
-        }, 1000);
+//        long elapsedMillis = SystemClock.uptimeMillis();
+//        updateHandler.postDelayed(new Runnable() {
+//            @Override
+//            public void run() {
+//                updateUptimes();
+//            }
+//        }, 1000);
     }
 }
