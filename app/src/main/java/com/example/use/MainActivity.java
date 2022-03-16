@@ -1,7 +1,6 @@
 package com.example.use;
 
 import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -14,7 +13,6 @@ import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import org.eclipse.paho.android.service.MqttAndroidClient;
 import org.eclipse.paho.client.mqttv3.IMqttActionListener;
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
@@ -24,7 +22,6 @@ import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
-
 import java.text.DecimalFormat;
 import java.util.Locale;
 import java.util.Random;
@@ -33,7 +30,7 @@ import java.util.concurrent.TimeUnit;
 
 public class MainActivity extends AppCompatActivity {
     static String MQTTHOST = "tcp://45.149.79.49:1883";
-    static String USERNAME = "CWh8AHEEvNFVpGM24bEN";
+    static String USERNAME = "1wNMcgkZcB4PFZIu3CVt";
     static String PASSWORD = "admin@hamta";
     MqttAndroidClient client;
     TextView subText;
@@ -51,7 +48,7 @@ public class MainActivity extends AppCompatActivity {
     String wholeUptime;
     float batteryTemp;
     int Rnumber;
-    String SDirection[] = {"North West", "West"};
+    String SDirection[] = {"North West"};
     String topicStr = "v1/devices/me/telemetry";
     boolean isActiveService = false;
 
@@ -112,15 +109,15 @@ public class MainActivity extends AppCompatActivity {
             public void run() {
                 while (!isInterrupted()) {
                     try {
-                        Thread.sleep(5000);  //1000ms = 1 sec
+                        Thread.sleep(2000);  //1000ms = 1 sec
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
                                 Number = new Random();
-                                Rnumber = ThreadLocalRandom.current().nextInt(10, 22);
+                                Rnumber = ThreadLocalRandom.current().nextInt(12, 14);
                                 textViewTemp.setText(String.valueOf(Rnumber + " " + (char) 0x00B0 + "C"));
 
-                                double WindS = ThreadLocalRandom.current().nextDouble(2.7, 2.8);
+                                double WindS = ThreadLocalRandom.current().nextDouble(2.7, 2.75);
                                 textViewWind.setText(String.valueOf(WindS));
                                 textViewWind.setText("WindSpeed:"+" "+new DecimalFormat("##.##").format(WindS)+" "+" m/s");
                                 WindSm = new DecimalFormat("##.##").format(WindS);
