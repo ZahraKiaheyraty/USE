@@ -46,29 +46,17 @@ public class MainActivity extends AppCompatActivity {
     TextView Speed;
     TextView wholeView;
     IntentFilter intentfilter;
-    float batteryTemp;
     Random Number;
     Switch startAllServices;
     Handler updateHandler;
+    String WindDm;
+    String WindSm;
     String wholeUptime;
+    float batteryTemp;
     int Rnumber;
-    String SDirection[] = {"Wind direction: North", "Wind direction: West"};
-
+    String SDirection[] = {"North West", "West"};
 
     String topicStr = "v1/devices/me/telemetry";
-    String msg = "{" + "Temp" + ":" + "msg1" + "}";
-
-
-    String topicStr2 = "v1/devices/me/telemetry";
-    String msg2 = "{\"Up time\":msg2}";
-
-    String topicStr3 = "v1/devices/me/telemetry";
-    String msg3 = "{\"CPU Temp\":msg3}";
-
-    String topicStr4 = "v1/devices/me/telemetry";
-    String msg4 = "{\"Wind Direction\":msg4}";
-
-    String topicStr5 = "v1/devices/me/telemetry";
 
 
     @Override
@@ -145,14 +133,18 @@ public class MainActivity extends AppCompatActivity {
                                 Rnumber = ThreadLocalRandom.current().nextInt(10, 22);
                                 textViewTemp.setText(String.valueOf(Rnumber + " " + (char) 0x00B0 + "C"));
 
-                                double Dwind = ThreadLocalRandom.current().nextDouble(2, 3);
-                                textViewWind.setText(String.valueOf(Dwind));
-                                textViewWind.setText(new DecimalFormat("##.##").format(Dwind));
+
+
+                                double WindS = ThreadLocalRandom.current().nextDouble(2.7, 2.8);
+                                textViewWind.setText(String.valueOf(WindS));
+                                textViewWind.setText(new DecimalFormat("##.##").format(WindS));
+                                WindSm = new DecimalFormat("##.##").format(WindS);
 
 
                                 Random RDirection = new Random();
                                 int index = RDirection.nextInt(SDirection.length - 0) + 0;
-                                textViewWindDirection.setText(SDirection[index]);
+                                textViewWindDirection.setText("Wind direction:"+SDirection[index]);
+                                WindDm = SDirection[index];
 
                                 if (isActiveService) {
                                     updateUptimes();
@@ -176,56 +168,47 @@ public class MainActivity extends AppCompatActivity {
                 isActiveService = b;
             }
         });
-
-
     }
 
 
     public void updateServices() {
-        int temp = (int) (Math.random() * 20 + 10);
 
         String topic = topicStr;
-        String message = "{" + "Temp" + ":" + temp + "º" + "}";
+        String message = "{\"Temp\":\"" + Rnumber + " ºc" + "\"}";
         try {
-
-
-//            JSONObject jsonObject = new JSONObject(
-//                    String.format( "{\"temperature\":%s}", USERNAME) );
-//            String temp = jsonObject.getString("temperature");
-            //client.publish("s/us", new MqttMessage(("211," + temp).getBytes()));
             client.publish(topic, message.getBytes(), 1, false);
-
-
         } catch (MqttException e) {
             e.printStackTrace();
         }
 
-        String topic2 = topicStr2;
-        String msg = "{" + "Temp" + ":" + Rnumber + "º" + "}";
+        String topic2 = topicStr;
+        String message2 =  "{\"Up time\":\"" + wholeUptime + "\"}";
         try {
-            client.publish(topic2, msg.getBytes(), 1, false);
+            client.publish(topic2, message2.getBytes(), 1, false);
         } catch (MqttException e) {
             e.printStackTrace();
         }
 
-        String topic3 = topicStr3;
-        String message3 = msg3;
+        String topic3 = topicStr;
+        String message3 = "{\"CPU Temp\":\"" + batteryTemp + " ºc" + "\"}";
         try {
             client.publish(topic3, message3.getBytes(), 1, false);
         } catch (MqttException e) {
             e.printStackTrace();
         }
 
-        String topic4 = topicStr4;
-        String message4 = msg4;
+
+
+        String topic4 = topicStr;
+        String message4 =  "{\"Wind Direction\":\"" + WindDm + "\"}";;
         try {
             client.publish(topic4, message4.getBytes(), 1, false);
         } catch (MqttException e) {
             e.printStackTrace();
         }
 
-        String topic5 = topicStr5;
-        String message5 = "{\"Wind Speed\":\"" + wholeUptime + "\"}";
+        String topic5 = topicStr;
+        String message5 = "{\"Wind Speed\":\"" + WindSm + " m/s" + "\"}";
 
         try {
             client.publish(topic5, message5.getBytes(), 1, false);
@@ -255,13 +238,5 @@ public class MainActivity extends AppCompatActivity {
                         - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS
                         .toMinutes(uptimeMillis)));
         wholeView.setText(wholeUptime);
-
-//        long elapsedMillis = SystemClock.uptimeMillis();
-//        updateHandler.postDelayed(new Runnable() {
-//            @Override
-//            public void run() {
-//                updateUptimes();
-//            }
-//        }, 1000);
     }
 }
