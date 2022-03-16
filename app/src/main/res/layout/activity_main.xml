@@ -13,7 +13,8 @@
         android:id="@+id/image_icon"
         android:layout_width="100dp"
         android:layout_height="100dp"
-        android:layout_marginTop="30dp"
+        android:layout_marginTop="20dp"
+        android:foregroundGravity="center"
         android:src="@drawable/ic_cloud"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -24,20 +25,37 @@
         android:id="@+id/text_temperature"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="5dp"
         android:text="22\u2103"
         android:textAlignment="center"
         android:textColor="@android:color/white"
         android:textSize="60sp"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/image_icon" />
+
+    <TextView
+        android:id="@+id/tv_temperature"
+        android:layout_width="140dp"
+        android:layout_height="20dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="1dp"
+        android:layout_marginBottom="16dp"
+        android:gravity="center"
+        android:text="Temperature"
+        android:textAlignment="center"
+        android:textColor="@android:color/white"
+        android:textSize="14sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/text_temperature" />
 
     <TextView
         android:id="@+id/text_detail"
         android:layout_width="match_parent"
         android:layout_height="40dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="15dp"
         android:background="@color/colorCardBackground"
         android:padding="8dp"
         android:text="Detail"
@@ -46,7 +64,7 @@
         android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/text_temperature" />
+        app:layout_constraintTop_toBottomOf="@+id/tv_temperature" />
 
     <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/imageView"
@@ -130,7 +148,6 @@
         app:layout_constraintStart_toEndOf="@id/imageView"
         app:layout_constraintTop_toBottomOf="@id/text_cpu_temperature" />
 
-
     <TextView
         android:id="@+id/text_wind_speed"
         android:layout_width="match_parent"
@@ -174,41 +191,25 @@
         android:id="@+id/text_wind_dir"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
+        android:layout_marginStart="10dp"
         android:layout_marginTop="40dp"
-        android:layout_marginEnd="10dp"
-        android:text="Wind direction: North"
+        android:layout_marginEnd="5dp"
+        android:text="Wind direction: West"
         android:textAlignment="textStart"
         android:textColor="@android:color/white"
-        android:textSize="16sp"
+        android:textSize="15sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/windmill2"
         app:layout_constraintTop_toBottomOf="@id/text_wind_speed" />
 
     <TextView
         android:id="@+id/text_wind_spe"
-        android:layout_width="40dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="50dp"
-        android:layout_marginTop="20dp"
-        android:layout_marginEnd="5dp"
-        android:gravity="center"
-        android:text="2.3"
-        android:textAlignment="center"
-        android:textColor="@android:color/white"
-        android:textSize="15sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/windmill2"
-        app:layout_constraintTop_toBottomOf="@id/text_wind_dir" />
-
-    <TextView
-        android:id="@+id/wind_point"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
+        android:layout_marginStart="10dp"
         android:layout_marginTop="20dp"
-        android:layout_marginEnd="10dp"
-        android:text="WindSpeed:             m/s"
+        android:layout_marginEnd="5dp"
+        android:text="WindSpeed:  2.71  m/s"
         android:textAlignment="textStart"
         android:textColor="@android:color/white"
         android:textSize="15sp"
@@ -221,7 +222,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="30dp"
-
         android:background="@color/colorBorder"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

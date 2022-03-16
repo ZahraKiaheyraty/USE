@@ -36,9 +36,6 @@ public class MainActivity extends AppCompatActivity {
     static String USERNAME = "CWh8AHEEvNFVpGM24bEN";
     static String PASSWORD = "admin@hamta";
     MqttAndroidClient client;
-
-    boolean isActiveService = false;
-
     TextView subText;
     MqttConnectOptions options;
     TextView tempTextView;
@@ -55,9 +52,8 @@ public class MainActivity extends AppCompatActivity {
     float batteryTemp;
     int Rnumber;
     String SDirection[] = {"North West", "West"};
-
     String topicStr = "v1/devices/me/telemetry";
-
+    boolean isActiveService = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,12 +71,11 @@ public class MainActivity extends AppCompatActivity {
             token.setActionCallback(new IMqttActionListener() {
                 @Override
                 public void onSuccess(IMqttToken asyncActionToken) {
-                    Toast.makeText(getBaseContext(), " connect", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getBaseContext(), "Connect", Toast.LENGTH_SHORT).show();
                 }
-
                 @Override
                 public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
-                    Toast.makeText(getBaseContext(), "dis connect", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getBaseContext(), "dis Connect", Toast.LENGTH_SHORT).show();
                 }
             });
         } catch (MqttException e) {
@@ -89,36 +84,30 @@ public class MainActivity extends AppCompatActivity {
 
         client.setCallback(new MqttCallback() {
             @Override
-            public void connectionLost(Throwable cause) {
-            }
+            public void connectionLost(Throwable cause) {}
 
             @Override
             public void messageArrived(String topic, MqttMessage message) throws Exception {
                 subText.setText(new String(message.getPayload()));
             }
-
             @Override
-            public void deliveryComplete(IMqttDeliveryToken token) {
-            }
+            public void deliveryComplete(IMqttDeliveryToken token) {}
         });
 
+        TextView textViewWindDirection = (TextView) findViewById(R.id.text_wind_dir);
         TextView textViewTemp = (TextView) findViewById(R.id.text_temperature);
         TextView textViewWind = (TextView) findViewById(R.id.text_wind_spe);
-        TextView textViewWindDirection = (TextView) findViewById(R.id.text_wind_dir);
-
-        wholeView = findViewById(R.id.text_up_time);
-        updateHandler = new Handler();
-//        updateUptimes();
-
+        startAllServices = (Switch) findViewById(R.id.simpleSwitch);
         tempTextView = (TextView) findViewById(R.id.text_cpu_temperature);
+        temperature = (TextView) findViewById(R.id.text_temperature);
+        Speed = (TextView) findViewById(R.id.text_wind_spe);
+
         intentfilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
         MainActivity.this.registerReceiver(broadcastreceiver, intentfilter);
+        wholeView = findViewById(R.id.text_up_time);
+        updateHandler = new Handler();
 
-        startAllServices = (Switch) findViewById(R.id.simpleSwitch);
-        Speed = (TextView) findViewById(R.id.text_wind_spe);
-        temperature = (TextView) findViewById(R.id.text_temperature);
-
-        Thread tn = new Thread() {
+        Thread trd = new Thread() {
             @Override
             public void run() {
                 while (!isInterrupted()) {
@@ -127,23 +116,18 @@ public class MainActivity extends AppCompatActivity {
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-
-
                                 Number = new Random();
                                 Rnumber = ThreadLocalRandom.current().nextInt(10, 22);
                                 textViewTemp.setText(String.valueOf(Rnumber + " " + (char) 0x00B0 + "C"));
 
-
-
                                 double WindS = ThreadLocalRandom.current().nextDouble(2.7, 2.8);
                                 textViewWind.setText(String.valueOf(WindS));
-                                textViewWind.setText(new DecimalFormat("##.##").format(WindS));
+                                textViewWind.setText("WindSpeed:"+" "+new DecimalFormat("##.##").format(WindS)+" "+" m/s");
                                 WindSm = new DecimalFormat("##.##").format(WindS);
-
 
                                 Random RDirection = new Random();
                                 int index = RDirection.nextInt(SDirection.length - 0) + 0;
-                                textViewWindDirection.setText("Wind direction:"+SDirection[index]);
+                                textViewWindDirection.setText("Wind direction:"+" "+ SDirection[index]);
                                 WindDm = SDirection[index];
 
                                 if (isActiveService) {
@@ -159,9 +143,7 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         };
-        tn.start();
-
-
+        trd.start();
         startAllServices.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
@@ -169,54 +151,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
-
-
-    public void updateServices() {
-
-        String topic = topicStr;
-        String message = "{\"Temp\":\"" + Rnumber + " ºc" + "\"}";
-        try {
-            client.publish(topic, message.getBytes(), 1, false);
-        } catch (MqttException e) {
-            e.printStackTrace();
-        }
-
-        String topic2 = topicStr;
-        String message2 =  "{\"Up time\":\"" + wholeUptime + "\"}";
-        try {
-            client.publish(topic2, message2.getBytes(), 1, false);
-        } catch (MqttException e) {
-            e.printStackTrace();
-        }
-
-        String topic3 = topicStr;
-        String message3 = "{\"CPU Temp\":\"" + batteryTemp + " ºc" + "\"}";
-        try {
-            client.publish(topic3, message3.getBytes(), 1, false);
-        } catch (MqttException e) {
-            e.printStackTrace();
-        }
-
-
-
-        String topic4 = topicStr;
-        String message4 =  "{\"Wind Direction\":\"" + WindDm + "\"}";;
-        try {
-            client.publish(topic4, message4.getBytes(), 1, false);
-        } catch (MqttException e) {
-            e.printStackTrace();
-        }
-
-        String topic5 = topicStr;
-        String message5 = "{\"Wind Speed\":\"" + WindSm + " m/s" + "\"}";
-
-        try {
-            client.publish(topic5, message5.getBytes(), 1, false);
-        } catch (MqttException e) {
-            e.printStackTrace();
-        }
-    }
-
 
     private BroadcastReceiver broadcastreceiver = new BroadcastReceiver() {
         @Override
@@ -238,5 +172,48 @@ public class MainActivity extends AppCompatActivity {
                         - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS
                         .toMinutes(uptimeMillis)));
         wholeView.setText(wholeUptime);
+    }
+
+    public void updateServices() {
+
+        String topic = topicStr;
+        String message = "{\"Temp\":\"" + Rnumber + " ºc" + "\"}";
+        try {
+            client.publish(topic, message.getBytes(), 1, false);
+        } catch (MqttException e) {
+            e.printStackTrace();
+        }
+
+        String topic2 = topicStr;
+        String message2 = "{\"Up time\":\"" + wholeUptime + "\"}";
+        try {
+            client.publish(topic2, message2.getBytes(), 1, false);
+        } catch (MqttException e) {
+            e.printStackTrace();
+        }
+
+        String topic3 = topicStr;
+        String message3 = "{\"CPU Temp\":\"" + batteryTemp + " ºc" + "\"}";
+        try {
+            client.publish(topic3, message3.getBytes(), 1, false);
+        } catch (MqttException e) {
+            e.printStackTrace();
+        }
+
+        String topic4 = topicStr;
+        String message4 = "{\"Wind Direction\":\"" + WindDm + "\"}";
+        try {
+            client.publish(topic4, message4.getBytes(), 1, false);
+        } catch (MqttException e) {
+            e.printStackTrace();
+        }
+
+        String topic5 = topicStr;
+        String message5 = "{\"Wind Speed\":\"" + WindSm + " m/s" + "\"}";
+        try {
+            client.publish(topic5, message5.getBytes(), 1, false);
+        } catch (MqttException e) {
+            e.printStackTrace();
+        }
     }
 }
